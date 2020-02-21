@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html ng-app="bank">
+<head>
+<meta charset="UTF-8">
+<title>Bank</title>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="angular/angular.js"></script>
+<script>
+angular.module("bank",[]);
+angular.module("bank").controller("telabanco",function($scope,$http){
+	
+	$scope.titulo="Banco Capgemini";
+	
+	$scope.conta="Digite sua conta";
+
+$scope.logar="Logar";
+	$scope.naocliente="Ainda nao é cliente?Clique aqui";
+$scope.mostracadastro=false;
+$scope.mostramenu=false;
+$scope.mostradadoscorrentista=false;
+
+	$scope.login=function(agencia){
+//vai logar no serviço
+$http.get("http://localhost:8080/receptor/login/"+agencia).then(function(data){
+					
+if(data.data.numerodaconta.length!=""){
+
+$scope.mostracadastro=false;
+$scope.mostramenu=true;
+$scope.mostradadoscorrentista=true;
+
+$scope.numerodact=data.data.numerodaconta;
+$scope.numerodaagencia=data.data.agencia;
+
+}else{
+
+
+	alert("Conta nao existente");
+}
+
+//_
+
+//_______________
+
+
+});
+	};
+
+	$scope.mostraCadastro=function(){
+$scope.mostracadastro=true;
+$scope.mostramenu=false;
+
+//vai logar no serviço
+
+	};
+
+
+	$scope.Cadastro=function(){
+$scope.mostracadastro=true;
+//vai logar no serviço
+var dados={'nome':$scope.nome,'cpf':$scope.cpf,'agencia':$scope.agenciacadastro};
+$http.post("http://localhost:8080/receptor/novaconta/"+$scope.nome+"/"+$scope.cpf+"/"+$scope.agenciacadastro).then(function(data){
+
+	console.log(data);
+					
+if(data.data.numerodaconta.length!=""){
+
+
+$scope.account=data.data.numerodaconta;
+$scope.mostracadastro=false;
+$scope.mostramenu=false;
+$scope.mostradadoscorrentista=true;
+$scope.numerodaagencia=data.data.agencia;
+$scope.sucesso="Sua conta foi criada com sucesso,guarde o numero dela";
+$scope.numerodact=data.data.numerodaconta;
+$scope.nome="";
+$scope.cpf="";
+$scope.agenciacadastro="";
+//alert("Cadastrado com sucesso");
+}else{
+
+
+	alert("Houve um problema, tente novamente");
+}
+
+//_
+
+//_______________
+
+
+});
+
+
+	};
+
+$scope.saldo=function(){
+//vai buscar o saldo
+
+$http.get("http://localhost:8080/receptor/saldo/"+$scope.account).then(function(data){
+
+	console.log(data.data);
+					
+
+$scope.campooperacao=data.data.saldo;
+
+
+//_
+
+//_______________
+
+
+});
+
+
+	};
+
+	$scope.saque=function(){
+//vai sacar um valor
+
+//vai depositar um valor
+$http.post("http://localhost:8080/receptor/saque/"+$scope.account+"/"+$scope.placesaque).then(function(data){
+
+	console.log(data.data);
+			
+			if(data.data.value>0){
+alert("Valor sacado com sucesso");
+
+			}	else{
+alert("Houve problema na operação");
+
+
+			}	
+
+$scope.campooperacao=data.data.saldo;
+
+
+//_
+
+//_______________
+
+
+});
+
+
+	};
+
+	$scope.deposito=function(){
+
+//vai depositar um valor
+$http.post("http://localhost:8080/receptor/deposito/"+$scope.account+"/"+$scope.placedeposito).then(function(data){
+
+	console.log(data.data);
+			
+			if(data.data.value>0){
+alert("Valor depositado com sucesso");
+
+			}	else{
+
+
+alert("Houve problema na operação");
+			}	
+
+$scope.campooperacao=data.data.saldo;
+
+
+//_
+
+//_______________
+
+
+});
+
+	};
+
+
+});
+</script>
+
+<style>
+
+body{
+
+	background-color:#f5f5f0;
+
+}
+	.table{
+
+position: absolute;
+width: 300px;
+left: 450px;
+top:50px;
+background-color: rgba(0,0,0,0.05);
+	color: blue;
+	}
+
+	.menu{
+position: absolute;
+width: 300px;
+left: 450px;
+top:400px;
+background-color: rgba(0,0,0,0.05);
+	color: blue;
+	}
+
+
+	.menucorrentista{
+position: absolute;
+width: 300px;
+left: 50px;
+top:50px;
+background-color: rgba(0,0,0,0.05);
+	color: blue;
+	}
+
+
+	.agency{
+
+height: 50px;
+
+	}
+.cadastro{
+
+position: absolute;
+width: 400px;
+left: 400px;
+top:400px;
+color:blue;
+background-color: rgba(0,0,0,0.05);
+
+}
+
+</style>
+</head>
+
+
+<body ng-controller="telabanco">
+<table class="table">
+	<tr><td>{{titulo}}<td><tr>
+<tr><td>{{conta}}</td></tr>
+<tr><td><input class="agency btn-block" type="number" required="required" ng-model="agencia"
+  /></td></tr>
+<tr><td><button class="btn btn-primary btn-block" ng-Click="login(agencia)" ng-disabled="!agencia">{{logar}}</button></td></tr>
+<tr><td><button class="btn btn-primary btn-block" ng-model="novocadastro" ng-Click="mostraCadastro()">{{naocliente}}</button></td></tr>
+</table>
+
+<div > </div>
+
+
+<div ng-show="mostracadastro">
+	<table class="cadastro">
+		<tr><td>Nome</td><td><input type="text" ng-model="nome"></td></tr>
+			<tr><td>Cpf</td><td><input type="number" ng-model="cpf"></td></tr>
+			<tr><td>Agencia de preferência</td><td><input type="number" ng-model="agenciacadastro"></td></tr>
+<tr><td colspan="2"><button class="btn btn-primary btn-block" ng-Click="Cadastro()">Cadastrar</button></td></tr>
+
+
+
+	</table>
+
+
+</div>
+
+<div ng-show="mostramenu">
+	<table class="menu">
+		<tr><td colspan="2"><button class="btn btn-primary btn-block" ng-Click="saldo()">Saldo</button></td><</tr>
+<tr><td colspan="2"><input class="agency btn-block" type="number" ng-model="campooperacao" required="required" pattern="([0-9]{1,3}\.)?[0-9]{1,3},[0-9]{2}$"></td></tr>
+
+<tr><td><button class="btn btn-primary btn-block" ng-Click="saque()">Saque</button></td><td><button class="btn btn-primary btn-block"  ng-Click="deposito()">Depósito</button></td></tr>
+		
+
+<tr><td><input type="number" class="agency btn-block" ng-model="placesaque"  ng-Click="" /></td><td><input type="number" class="agency btn-block"   ng-model="placedeposito"  /></td></tr>
+		
+
+	</table>
+
+</div>
+
+<div ng-show="mostradadoscorrentista">
+	<table class="menucorrentista">
+<tr><td colspan="2"><div ng-model="sucesso" ></div></td><td></td></tr><tr><td>Numero da agencia</td><td colspan="2"><input class="agency btn-block" type="text" ng-model="numerodaagencia"></td></tr>
+
+<tr><td>Numero da conta</td><td colspan="2"><input class="agency btn-block" type="text" ng-model="numerodact"></td></tr>
+
+
+
+	</table>
+
+
+</div
+
+<input type="hidden" ng-model="account">
+</body>
+</html>
